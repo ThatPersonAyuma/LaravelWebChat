@@ -2,7 +2,6 @@
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { NavItem } from '@/types';
 import AppShell from '@/components/AppShell.vue';
-import AppContent from '@/components/AppContent.vue';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -57,21 +56,6 @@ const footerNavItems: NavItem[] = [
     </div>
     </div>
     </Sidebar>
-    <div style="display: flex; width: 100%; height: 100vh;flex-direction: column;">
-        <div style="height: 80px; width: 100%;flex: none;">
-            <h1 style="font-size: 50px; text-align: center;">Judul Group Chat</h1>
-        </div>
-        <div style="flex: 1;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            background-color: white;
-            overflow-y: auto;">
             <slot />
-        </div>
-        <div style="height: 65px;width: 100%; background-color: darkgray;flex: none;">
-        </div>
-    </div>
     </AppShell>
 </template>
