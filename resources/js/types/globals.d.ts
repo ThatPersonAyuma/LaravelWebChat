@@ -1,4 +1,5 @@
 import { AppPageProps } from '@/types/index';
+import Echo from 'laravel-echo';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -23,4 +24,9 @@ declare module '@vue/runtime-core' {
         $page: Page;
         $headManager: ReturnType<typeof createHeadManager>;
     }
+}
+declare global {
+  interface Window {
+    Echo: Echo<any>;
+  }
 }
