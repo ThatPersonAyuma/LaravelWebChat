@@ -1,4 +1,4 @@
-<script setup="ts">
+<script setup lang="ts">
 import GroupRoom from './GroupRoom.vue';
 </script>
 
