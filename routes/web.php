@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Events\MessageSent;
 use Inertia\Inertia;
+use App\Http\Controllers\ChatRoomController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -33,6 +34,7 @@ Route::get('/send-message', function () {
 
     return 'Succes';
 });
+Route::get('/get-user', [ChatRoomController::class, '']);
 # End Region of WebChat
 
 require __DIR__.'/settings.php';
