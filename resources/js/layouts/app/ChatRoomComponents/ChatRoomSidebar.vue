@@ -9,12 +9,13 @@ const emit = defineEmits<{
 }>()
 const props = defineProps<{user: User, chatRoom: ChatRoom|null}>()
 const user = toRef(props, 'user');
+const localChatRoom = toRef(props, 'chatRoom');
 onMounted(()=>{
     console.log(`Child ${user.value.name}`);
 })
 watch(() => props.chatRoom, (val) => {
-  console.log('Parent chat_room changed:', val);
-})
+  localChatRoom.value = val;
+});
 
 </script>
 
@@ -23,7 +24,7 @@ watch(() => props.chatRoom, (val) => {
     <div style="flex: 5;">
         <div style="display:flex; width: 100%;height: 100%;">
                 <LeftestSidebar />
-                <MiddleSidebar v-model:chatRoom="props.chatRoom" :user="user" 
+                <MiddleSidebar v-model:chatRoom="localChatRoom" :user="user" 
                                 @update:chatRoom="val => emit('update:chatRoom', val)"/>
         </div>
     </div>
