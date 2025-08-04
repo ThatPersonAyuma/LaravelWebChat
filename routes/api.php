@@ -11,7 +11,7 @@ Route::middleware('api')->group(function () {
 
     Route::get('/get-user-chat-rooms', [ChatRoomController::class, 'get_chat_rooms']);
 
-    Route::get('/get-user-cr-message', [ChatRoomController::class, 'get_cr_messages']);
+    Route::get('/get-user-cr-messages', [ChatRoomController::class, 'get_cr_messages']);
     
     Route::get('/get-group-by-id', [ChatRoomController::class, 'get_group_by_id']);
 

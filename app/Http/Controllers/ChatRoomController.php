@@ -28,7 +28,7 @@ class ChatRoomController extends Controller
                 ['chat_rooms.is_group', '=', '1']
                 ])
             ->join('groups', 'groups.id', '=', 'chat_rooms.receiver_id')
-            ->select('groups.name as name', 'chat_rooms.receiver_id as id', 'chat_rooms.is_group as is_group');
+            ->select('groups.name as name', 'chat_rooms.receiver_id as id', 'chat_rooms.is_group as is_group', 'chat_room_users.chat_room_id as chat_room_id');
             // ->get(); // get ambil record berdasarkan queery kalau get_all ambil semua
         $user_table = DB::table('chat_room_users')
             ->join('chat_rooms', 'chat_room_users.chat_room_id', '=', 'chat_rooms.id') // double titik dua
@@ -37,21 +37,20 @@ class ChatRoomController extends Controller
                 ['chat_rooms.is_group', '=', '0']
                 ])
             ->join('users', 'users.id', '=', 'chat_rooms.receiver_id')
-            ->select('users.name as name', 'chat_rooms.receiver_id as id', 'chat_rooms.is_group as is_group');
+            ->select('users.name as name', 'chat_rooms.receiver_id as id', 'chat_rooms.is_group as is_group', 'chat_room_users.chat_room_id as chat_room_id');
         $union_table = $group_table->union($user_table)->get();
         return response()->json(['result'=>'success','data_query'=>$union_table], 200);
     }
     public function get_cr_messages(Request $request){
         $validated = $request->validate([
             'chat_room_id' => 'required|integer',
-            'sender_id' => 'required|integer',
         ]);
         $result_query = ChatRoomUser::join('messages', 'messages.chat_room_user_id', '=', 'chat_room_users.id')
             ->where([
-                ['chat_room_users.chat_room_id', '=', $validated['chat_room_id']],
-                ['chat_room_users.sender_id', '=', $validated['sender_id']]
+                ['chat_room_users.chat_room_id', '=', $validated['chat_room_id']]
                 ])
-            ->select('messages.message as Pesan', 'chat_room_users.sender_id as IdPengirim')
+            ->join('users', 'users.id', '=', 'chat_room_users.sender_id')
+            ->select('messages.message as Message', 'chat_room_users.sender_id as SenderId', 'users.name as SenderName')
             ->get();
         return response()->json(['result'=>'success','data_query'=>$result_query], 200);
     }

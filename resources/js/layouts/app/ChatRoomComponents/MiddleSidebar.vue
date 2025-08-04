@@ -10,7 +10,8 @@
     function handleClick(index: number){
         emit('update:chatRoom', {
             Id:chatRooms.value[index].id,
-            IsGroup: chatRooms.value[index].is_group
+            IsGroup: chatRooms.value[index].is_group,
+            ChatRoomId:  chatRooms.value[index].chat_room_id,
         });//selected_cr.value = {Id:chatRooms.value[index].id, // ini udah akses nilai ChatRoom dengan .value jadi tinggal assign nilainya
                                 // IsGroup: chatRooms.value[index].is_group};
         activeIndex.value = index;

@@ -38,6 +38,7 @@ export interface User {
 export interface ChatRoom {
     Id: number;
     IsGroup: boolean;
+    ChatRoomId: number;
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;

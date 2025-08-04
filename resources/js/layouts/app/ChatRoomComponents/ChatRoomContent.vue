@@ -1,14 +1,15 @@
 <script setup lang="ts">
-  import { onMounted, ref, onBeforeMount, toRef, computed } from 'vue';
+  import { onMounted, ref, onBeforeMount, toRef, computed, watch } from 'vue';
   import axios from 'axios';
   import { useEchoPublic } from '@laravel/echo-vue';
   import { ChatRoom, User } from '@/types';
+  import Message from './Message.vue';
 
   const message = ref('');
-  const messages = ref<string[]>([]);
+  const messages = ref<any[]>([]);
   const props = defineProps<{user: User, chatRoom: ChatRoom|null}>()
   const user = toRef(props, 'user');
-  const chatRoom = computed(()=>props.chatRoom);
+  const localChatRoom = toRef(props, 'chatRoom');
 
   function handleSubmit(e: Event) {
     e.preventDefault();
@@ -19,7 +20,7 @@
     message.value = '';
   }
   onMounted(()=>{
-    console.log("Chatroom", chatRoom.value);
+    console.log("Chatroom", localChatRoom.value);
     console.log("Yeyyy");
     console.log(`Contenct ${user.value.name}`);
     window.Echo.channel('ChatRoom')
@@ -34,6 +35,40 @@
       message: message.value,
     })
   }
+  watch(() => props.chatRoom, (val) => {
+    localChatRoom.value = val;
+    if (localChatRoom.value){
+      getAllMessage(localChatRoom.value.ChatRoomId, localChatRoom.value.IsGroup);
+    }
+  });
+  const getAllMessage = async (chat_room_id: number, is_group: boolean) => {
+        try{
+          let uri_string: string|null = null;
+          // let params;
+          if (is_group){
+            console.log('chat_room_id:', chat_room_id);
+            uri_string = '/api/get-user-cr-messages';
+            // params= {chat_room_id:chat_room_id};
+          }else{
+            uri_string = '/api/get-user-cr-messages';
+            // params= {};
+          }
+          if (uri_string){
+            const response = await axios.get(uri_string, {
+                params: {chat_room_id:chat_room_id}
+            });
+            messages.value = response.data.data_query // kalau .data aja bentuknya proxy target
+            console.log('Berhasil query: ', messages.value);
+            console.log('Berhasil response data: ', response.data);
+            console.log(JSON.stringify(response.data, null, 2));
+            for (const room of messages.value){
+                console.log('Iterasi: ', room); // If you see a proxy data type just treat it as its type json, list etc
+            }
+          }
+        }catch (err){
+            console.error('Failed query: ', err);
+        }
+    }
 </script>
 
 <style lang="css" scoped>
@@ -61,7 +96,8 @@
             flex-direction: column;
             gap: 0.5rem;
             overflow-y: auto;">
-        <div v-for="(msg, i) in messages" :key="i" class="message">{{ msg }}</div>
+        <div v-for="(msg, i) in messages" :key="i" class="message"><Message :username="msg.SenderName" :message="msg.Message"></Message></div> 
+        <!-- {{ msg.Message }} -->
         </div>
         <div style="padding: 0 5px;" v-if="chatRoom">
         <div style="height: 65px;
