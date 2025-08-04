@@ -35,4 +35,9 @@ export interface User {
     updated_at: string;
 }
 
+export interface ChatRoom {
+    Id: number;
+    IsGroup: boolean;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;

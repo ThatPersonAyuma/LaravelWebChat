@@ -1,13 +1,14 @@
 <script setup lang="ts">
-  import { onMounted, ref, onBeforeMount, toRef } from 'vue';
+  import { onMounted, ref, onBeforeMount, toRef, computed } from 'vue';
   import axios from 'axios';
   import { useEchoPublic } from '@laravel/echo-vue';
-  import { User } from '@/types';
+  import { ChatRoom, User } from '@/types';
 
   const message = ref('');
   const messages = ref<string[]>([]);
-  const props = defineProps<{user: User}>()
+  const props = defineProps<{user: User, chatRoom: ChatRoom|null}>()
   const user = toRef(props, 'user');
+  const chatRoom = computed(()=>props.chatRoom);
 
   function handleSubmit(e: Event) {
     e.preventDefault();
@@ -18,6 +19,7 @@
     message.value = '';
   }
   onMounted(()=>{
+    console.log("Chatroom", chatRoom.value);
     console.log("Yeyyy");
     console.log(`Contenct ${user.value.name}`);
     window.Echo.channel('ChatRoom')
@@ -61,7 +63,7 @@
             overflow-y: auto;">
         <div v-for="(msg, i) in messages" :key="i" class="message">{{ msg }}</div>
         </div>
-        <div style="padding: 0 5px;">
+        <div style="padding: 0 5px;" v-if="chatRoom">
         <div style="height: 65px;
                     width: 100%;
                     background-color: darkgray;
@@ -74,6 +76,5 @@
             <button type="submit" class="send-button" id="sendButton" style="min-width: 25px; height: 100%;padding-right: 5px; cursor:pointer;">Send</button>
         </div>
         </div>
-    </form>
-            
+    </form>         
 </template>

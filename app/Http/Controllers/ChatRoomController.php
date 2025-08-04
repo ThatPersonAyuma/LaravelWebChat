@@ -7,6 +7,7 @@ use App\Models\ChatRoom;
 use App\Models\ChatRoomUser;
 use App\Models\User;
 use App\Models\Group;
+use DB;
 
 class ChatRoomController extends Controller
 {
@@ -20,14 +21,25 @@ class ChatRoomController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|integer',
         ]);
-        $query_result = ChatRoomUser::join('users', 'chat_room_users.sender_id', '=', 'users.id') // double titik dua
-            ->join('chat_rooms', 'chat_room_users.chat_room_id', '=', 'chat_rooms.id')
+        $group_table = DB::table('chat_room_users')
+            ->join('chat_rooms', 'chat_room_users.chat_room_id', '=', 'chat_rooms.id') // double titik dua
             ->where([
-                ['chat_room_users.sender_id', '=', $validated['user_id']]
+                ['chat_room_users.sender_id', '=', $validated['user_id']],
+                ['chat_rooms.is_group', '=', '1']
                 ])
-            ->select('chat_room_users.id as cr_user_id', 'chat_rooms.receiver_id as id_penerima', 'chat_rooms.is_group as is_group','users.name as pengirim')
-            ->get(); // get ambil record berdasarkan queery kalau get_all ambil semua
-            return response()->json(['result'=>'success','data_query'=>$query_result], 200);
+            ->join('groups', 'groups.id', '=', 'chat_rooms.receiver_id')
+            ->select('groups.name as name', 'chat_rooms.receiver_id as id', 'chat_rooms.is_group as is_group');
+            // ->get(); // get ambil record berdasarkan queery kalau get_all ambil semua
+        $user_table = DB::table('chat_room_users')
+            ->join('chat_rooms', 'chat_room_users.chat_room_id', '=', 'chat_rooms.id') // double titik dua
+            ->where([
+                ['chat_room_users.sender_id', '=', $validated['user_id']],
+                ['chat_rooms.is_group', '=', '0']
+                ])
+            ->join('users', 'users.id', '=', 'chat_rooms.receiver_id')
+            ->select('users.name as name', 'chat_rooms.receiver_id as id', 'chat_rooms.is_group as is_group');
+        $union_table = $group_table->union($user_table)->get();
+        return response()->json(['result'=>'success','data_query'=>$union_table], 200);
     }
     public function get_cr_messages(Request $request){
         $validated = $request->validate([
