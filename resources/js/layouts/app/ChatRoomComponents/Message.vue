@@ -10,6 +10,8 @@
     .message-container {
         display: grid;
         grid-template-rows: 20px auto;
+        width: max-content;
+        padding: 0;
     }
     .username {
         background-color: blue;
@@ -21,11 +23,16 @@
         background-color: green;
         font-size: 16px;
     }
+    .message-container-self {
+        display: grid;
+        grid-template-rows: 20px auto;
+        border: 10px;
+    }
 </style>
 
 <template>
-    <div class="message-container">
+    <!-- <div class="message-container"> -->
         <span class="username">{{ username }}</span>
         <span class="message">{{ message }}</span>
-    </div>
+    <!-- </div> -->
 </template>

@@ -72,7 +72,7 @@
 </script>
 
 <style lang="css" scoped>
-    .message {
+    .message-container {
       max-width: 75%;
       padding: 12px 16px;
       border-radius: 20px;
@@ -81,8 +81,20 @@
       word-wrap: break-word;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       user-select: text;
-      background-color: grey;
+      display: grid;
+      grid-template-rows: 20px auto;
     }
+
+    .from-me {
+      align-self: flex-end;
+      background-color: #dcf8c6;
+    }
+
+    .from-them {
+      align-self: flex-start;
+      background-color: #e5e5ea;
+    }
+
 </style>
 
 <template>
@@ -96,7 +108,7 @@
             flex-direction: column;
             gap: 0.5rem;
             overflow-y: auto;">
-        <div v-for="(msg, i) in messages" :key="i" class="message"><Message :username="msg.SenderName" :message="msg.Message"></Message></div> 
+        <div v-for="(msg, i) in messages" :class="['message-container',user.id === msg.SenderId ? 'from-me' : 'from-them']" ><Message :username="msg.SenderName" :message="msg.Message"></Message></div> 
         <!-- {{ msg.Message }} -->
         </div>
         <div style="padding: 0 5px;" v-if="chatRoom">
