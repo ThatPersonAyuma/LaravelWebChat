@@ -14,7 +14,7 @@
   function handleSubmit(e: Event) {
     e.preventDefault();
     if (!message.value.trim()) return;
-    messages.value.push(message.value.trim());
+    messages.value.push({Message:message.value.trim(), SenderName:user.value.name, SenderId: user.value.id});
     // Post
     newMessage();
     message.value = '';
@@ -26,7 +26,9 @@
     window.Echo.channel('ChatRoom')
     .listen('.MessageSent', (event: any) => {
         console.log('New message:', event.message);
-        messages.value.push(event.message);
+        if(String(event.SenderId) != String(user.value.id)){
+          messages.value.push(event.message);
+        }
     });
   })
   const newMessage = async () => {
@@ -94,6 +96,57 @@
       align-self: flex-start;
       background-color: #e5e5ea;
     }
+    .chat-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .bubbles {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Bubble Style
+    .bubble {
+      max-width: 60%;
+      padding: 10px 14px;
+      border: 2px solid #111;
+      border-radius: 14px;
+      box-shadow: 3px 3px 0 #111;
+      background: #fff;
+      font-weight: 600;
+      position: relative;
+    }
+    .bubble.left {
+      align-self: flex-start;
+    }
+    .bubble.right {
+      align-self: flex-end;
+      background: #e9f2ff;
+    } */
+
+    /* ---- Animasi Persona 5 style ---- */
+    .bubble-enter-active,
+    .bubble-leave-active {
+      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .bubble-enter-from {
+      opacity: 0;
+      transform: translateX(120%) skewX(-10deg) scale(0.9);
+    }
+    .bubble-enter-to {
+      opacity: 1;
+      transform: translateX(0) skewX(0deg) scale(1);
+    }
+
+    .bubble-leave-to {
+      opacity: 0;
+      transform: translateX(120%) skewX(10deg) scale(0.9);
+    }
 
 </style>
 
@@ -108,8 +161,10 @@
             flex-direction: column;
             gap: 0.5rem;
             overflow-y: auto;">
-        <div v-for="(msg, i) in messages" :class="['message-container',user.id === msg.SenderId ? 'from-me' : 'from-them']" ><Message :username="msg.SenderName" :message="msg.Message"></Message></div> 
-        <!-- {{ msg.Message }} -->
+        <TransitionGroup name="bubble" tag="div" class="bubbles">
+          <div v-for="(msg, i) in messages" :key="i" :class="['message-container',user.id === msg.SenderId ? 'from-me' : 'from-them']" ><Message :username="msg.SenderName" :message="msg.Message"></Message>
+          </div> 
+        </TransitionGroup>
         </div>
         <div style="padding: 0 5px;" v-if="chatRoom">
         <div style="height: 65px;

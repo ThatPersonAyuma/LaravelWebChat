@@ -28,6 +28,7 @@
         grid-template-rows: 20px auto;
         border: 10px;
     }
+    
 </style>
 
 <template>
